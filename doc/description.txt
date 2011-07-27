@@ -1,0 +1,126 @@
+INTRODUCTION:
+------------------------------------------------------------------------------------------------
+
+---- Motivation: ----
+An increased amount of institutions, organizations, companies and even private people use computers to store their data 
+in electronic forms, like spreadsheets and databases, and the amount of data gathered, stored and used are increasing rapidly.
+There are a multitude of ways to store the data, like databases, spreadsheets, and even formatted textfiles like CSV, json and XML.
+For each of these methods, there are a multitude of programs (eg. for databases: mSQL, mySQL, postgreSQL, etc) and no standard 
+format to save in, and no solid and well functioning means of exporting and importing with these programs. 
+
+Sometimes it is necessary to transfer data from one format/program to another, but the amount of tools for this is very limited and 
+their quality very varying. Some examples are:
+
+*StatTransfer:* Program for transferring data from Excell to Access and vice versa. The program is not at all user friendly, very limited
+in it's abilities (for example it's not possible to import to multiple tables in a database), and limited in it's documention.
+*Native Import Functionality:* Microsoft Office and Libre Office both have built in import and export functionality, which is generally more
+userfriendly. But they are _very_ limited in their abilities, and if the required data conversion presents only a minimum of complexity
+(like only importing some columns, or renaming the imported columns), these native tools are useless.
+*Talend Open Studio:* The open source Talend Open Studio (TOS) is a very, very powerful program, able to do pretty much anything one wants. 
+Its has a huge amount of supported inputs and outputs and can transform the data in pretty much all ways imaginable. But the 
+result of all these abilities, is that the learning curve is steep and it seems the focus has been more on functionality than user experience.
+The error messages passed from eg. Access are not very informative (due to not being properly passed to user by TOS), and parts
+of TOS is not very intuitive. So while this is a great tool for very competent users it is simply too complex for the average to advanced 
+user.
+
+There is a gap in the software available to convert data between the different storage tools and types. Either the software is
+too limited in its abilities (StatTransfer, Native Import/Export) or it is too complicated to use, unless you are an expert (TOS).
+There is currently no existing programs for the semi-advanced user to transfer data between different data storages, and doing minor
+manipulations along the way - something in between TOS and StatTransfer is required. Small to medium organizations/institutions/companies, 
+often have big amounts of data stored, and there is sometimes a need to be able to convert data between different formats/systems.
+
+---- Description/Goal: ---- 
+This is the motivation for Convert'o'Rama. The idea is to build a tool that is as intuitive and user-friendly as possible. That does
+not have a steep learning curve, but yet the power to at input and output to a multitude of programs and doing minor transformations 
+of the data in the steps between input and output.
+
+The aim is to build a program that:
+* Support a wide range of programs for input and output
+* Is as intuitive and simple to use as possible
+* Allows simple manipulation of the data, like text replacement, reordering/renaming of columns, filtering of columns
+* Is using a building blocks approach - You have one or more inputs in one end, one or more outputs in the outer, and in between 
+     a lot of building blocks, that each do a simple transformation, but in combination is able to do fairly complex data manipulation.
+
+DETAILS:
+----------------------------------------------------------------------------------------
+
+---- Formats: ---- 
+The program should support as many output and input formats as possible/reasonable. Potentially, to keep things as simple
+as possible for the user, some of the lesser used formats should only be available as downloadable addons/plugins.
+
+Some of the formats that should be supported for input output:
+* csv
+* access
+* excell
+* libre/open office calc
+* mySQL
+* mSQL
+* postgreSQL
+* XML
+* json
+
+---- Transformations of Data ---- 
+As an attempt to make the learning curve simple, and not overwhelm the user, the program is attempted built up in 
+a way that you have a input(s) in one end, output(s) in the other and 'building blocks' in between. Each building 
+block does a simple and easily understandable transformation. The combination of several simple building blocks
+will allow fairly complex functionality.
+
+The possible transformation are:
+
+* Merge: Rows from same table can have its columns merged based on key
+* Split: A column can be split into multiple rows
+* Split: A column can be split into multiple columns
+* Reorder: The ordering of the columns can be changed
+* Selection: Select only certain rows to be sent to output
+* Data type conversion: Rows can have their datatype converted. What is input as eg. a string can be output as eg. integer
+* Search/Replace: Values of columns can be changed based on regular expressions and simple search/replace
+* Filtering: Rows can be filtered out based on pattern maching (simple and regexp)
+* Joins: Tables can be joined based on keys
+* New Columns: new columns can be created for output
+* Default values: default values an be put in empty columns
+* Column merge: columns can be merged to a new columns in a multitude of simple ways
+** String concatenation: Strings can be concatenated
+** Math operations: Simple math operations can be done on two or more columns
+
+---- Values ----
+* Simple and consistent design
+* Robustness, user-friendliness and documentation prioritized over number of features
+* Simple format when saving; XML or json
+* Non-steep learning curve/intuitive GUI
+* Extendable: Allow plugins/add ons
+* Well commented and well described code/api
+* Consistent UI Design
+* Internationalization?
+
+---- Functionality ----
+* Preview of input output tables (in input output nodes)
+* Marking of erroneous nodes with red
+* Good log output for finding error
+* To the extend possible; automagic schema changes/propagation between nodes
+* Undo and Redos to the extend possible
+* Export of jobs so they are runnable as batch jobs
+
+---- TODO: ----
+* Examine userobjects and codecs
+* Ensure that cloning of my own nodes are done correctly - and not just refering to the same obj
+* Clean up code
+* Document code
+* Tooltips on ALL ui elements
+* Decide on where to put error messages - both persistent and occasional
+* CSV: Unit tests for proper and improper file formats
+* Filter on filepicker for csv files
+* Add name to table - for csv files, automatically suggest filename - consider making list of table names global so no collision.
+* Propagate table changes from node to next
+* Prettify table in search/replace dialog
+* Search + Replace: handle missing table
+* Search + Replace: handle no strings in table
+* Search + Replace: handle table changes
+* Search + replace: disable the remove button field so it cant be edited
+* Search + Replace: Different dialog on missing table
+* Search + replace: Reordering of rows possible
+
+---- GENERAL CLEANUP AT THE END OF EACH ITERATION ----
+* Make sure everything has javadoc
+* General Code commenting
+* Remove unused imports
+* Code cleanup
