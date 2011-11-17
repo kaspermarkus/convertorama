@@ -1,5 +1,6 @@
 package convertorama.nodes;
 
+import com.mxgraph.model.mxCell;
 import convertorama.ConvertORama;
 import convertorama.TableDescriptor;
 import java.io.Serializable;
@@ -10,9 +11,10 @@ import javax.swing.JFrame;
  *
  * @author kasper
  */
-public class Node implements Serializable {
+public abstract class Node implements Serializable {
     public static String SINGLE_IN_MULTI_OUT = "SingleInMultiOut";
     private final String NODE_TYPE = "None"; 
+    protected mxCell cell;
     private ImageIcon icon;
     private String nodeType;    
     private String nodeLabel;
@@ -66,14 +68,24 @@ public class Node implements Serializable {
         return nodeLabel;
     } 
     
-    public TableDescriptor getOutputTableDescriptor() {
-        return null;
+    public mxCell getCell() {
+        return cell;
     }
-    
     /**
      * Called when a new edge points to this node
      */
     public void edgeTargetEvent(Node source) {
         
     }
+    
+    public abstract void validate() throws Exception;
+    /* -------------- mxGraph related stuff ------------------ */
+    public abstract void updateMxData(mxCell cell, Node caller);
+    public abstract void startProcessing() throws Exception;
+    public boolean processRow(Object[] values) throws Exception {
+        System.out.println("NODE: Called in node!!!!!");
+        return true;
+    };
+    
+    public abstract void stopProcessing() throws Exception;
 }

@@ -17,9 +17,10 @@ public class ColumnDescriptor {
     }
 
     public String[] getColumnPair() {
-        String[] ret = { columnName, typeToString() };
+        String[] ret = {columnName, typeToString()};
         return ret;
     }
+
     public String typeToString() {
         if (columnType == STRING) {
             return "String";
@@ -34,7 +35,7 @@ public class ColumnDescriptor {
             return null;
         }
     }
-    
+
     public boolean validate(Object obj) {
         if (columnType == STRING) {
             return obj.getClass().getSimpleName().equals("String");
@@ -69,5 +70,15 @@ public class ColumnDescriptor {
 
     public int getColumnType() {
         return columnType;
+    }
+
+    public boolean equals(Object obj) {
+        System.out.println("Comparing: " + obj.toString() + "(" + obj.getClass() + ") with " + columnName);
+        if (columnName.equals(obj)) {
+            System.out.println("Matched!!!");
+            return true;
+        } else {
+            return super.equals(obj);
+        }
     }
 }

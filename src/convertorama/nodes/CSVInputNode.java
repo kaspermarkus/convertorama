@@ -1,6 +1,5 @@
 package convertorama.nodes;
 
-import convertorama.InputNode;
 import convertorama.Table;
 import convertorama.TableDescriptor;
 import java.io.BufferedReader;
@@ -19,7 +18,6 @@ public class CSVInputNode extends InputNode {
     private File file = null;
     private char separator = ';';
     private boolean firstLineHeader = false;
-    private TableDescriptor tableDescriptor;
     //The following is used for processing
     private BufferedReader bufferedReader;
 
@@ -57,13 +55,12 @@ public class CSVInputNode extends InputNode {
         System.out.println(dialog.getReturnStatus());
     }
 
-    public TableDescriptor getOutputTableDescriptor() {
-        return tableDescriptor;
-    }
-
-    private void updateTableDescriptor() {
+    @Override
+    protected void updateTableDescriptor() throws Exception {
         tableDescriptor = CSVInputNode.getTableDescriptor(file, separator, firstLineHeader);
     }
+    
+
 
     /**
      * Read 1 line of the csv file and base table descriptor on that. CSV files have all their fields
@@ -75,7 +72,7 @@ public class CSVInputNode extends InputNode {
      * @param firstLineIsHeader
      * @return 
      */
-    public static TableDescriptor getTableDescriptor(File file, char separator, boolean firstLineIsHeader) {
+    public static TableDescriptor getTableDescriptor(File file, char separator, boolean firstLineIsHeader) throws Exception {
         try {
             InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file));
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -91,11 +88,9 @@ public class CSVInputNode extends InputNode {
                 inputStreamReader.close();
                 throw new IOException("Was not able to read the first line of the file: " + file.toString());
             }
-
         } catch (IOException e) {
-            System.err.println("Error reading file: " + file.toString() + ". Errr message: " + e.getMessage());
-            e.printStackTrace();
-            return null;
+            System.err.println("Error reading file: " + file.toString() + ". Err message: " + e.getMessage());
+            throw e;
         }
     }
 
@@ -128,8 +123,44 @@ public class CSVInputNode extends InputNode {
         }
     }
 
+
     @Override
-    public TableDescriptor startProcessing() {
+    public boolean processRow(Object[] values) throws Exception {
+        System.out.println("ProcessRow called in CSV InputNode");
+        try {
+            String line = bufferedReader.readLine();
+            if (line == null) {
+                return false; //indicates EOF
+            } 
+            String[] fields = line.split(separator + "");
+            targetNode.processRow(fields);
+            return true;
+        } catch (Exception e) {
+            //TODO Release semaphore
+            try {
+                bufferedReader.close();
+                //probably a stop processing call?!
+            } catch (Exception e2) {
+                //TODO Error handling
+                e2.printStackTrace();
+            }
+            return false;
+        }
+    }
+
+    @Override
+    public void stopProcessing() throws Exception {
+        try {
+            bufferedReader.close();
+            this.targetNode.stopProcessing();
+        } catch (Exception e) {
+            //TODO Error handling
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void startProcessing() throws Exception {
         //TODO: Lock stuff while doing this
         //make sure table descriptor is up to date:
         this.updateTableDescriptor();
@@ -140,42 +171,11 @@ public class CSVInputNode extends InputNode {
             if (firstLineHeader) { //if first line is header, skip it
                 bufferedReader.readLine();
             }
+            //tell targetNode to start processing:
+            this.targetNode.startProcessing();
         } catch (IOException ioe) {
             //TODO Error handling
             ioe.printStackTrace();
-            return null;
-        }
-        return tableDescriptor;
-    }
-
-    @Override
-    public Object[] processRow() {
-        try {
-            String line = bufferedReader.readLine();
-            if (line == null) {
-                return null; //indicates EOF
-            } else {
-                return line.split(separator + "");
-            }
-        } catch (Exception e) {
-            //TODO Release semaphore
-            try {
-                bufferedReader.close();
-            } catch (Exception e2) {
-                //TODO Error handling
-                e2.printStackTrace();
-            }
-            return null;
         }
     }
-
-    @Override
-    public void stopProcessing() {
-        try {
-            bufferedReader.close();
-        } catch (Exception e) {
-            //TODO Error handling
-            e.printStackTrace();
-        }
-    }    
 }

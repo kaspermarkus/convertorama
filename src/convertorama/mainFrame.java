@@ -10,6 +10,7 @@
  */
 package convertorama;
 
+import convertorama.nodes.InputNode;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxEvent;
@@ -202,7 +203,9 @@ public class mainFrame extends javax.swing.JFrame {
         });
     }
 
-    private boolean processGraph() {
+    private boolean updateGraph() {
+        InputNode startNode;
+        
         //First get input vertices:
         List<mxCell> inputVertices = new LinkedList<mxCell>();
         //get vertices:
@@ -216,14 +219,57 @@ public class mainFrame extends javax.swing.JFrame {
         }
         System.out.println("total input nodes found: "+inputVertices.size());
         //start the processing:
-        mxCell first = inputVertices.get(0);
-        InputNode firstNode = (InputNode)first.getValue();
-        firstNode.startProcessing();
-        Object[] row;
-        while ((row = firstNode.processRow()) != null) {
-            
+        mxCell startCell = inputVertices.get(0);
+        startNode = (InputNode)startCell.getValue();
+        //update the notes with info about the graph
+        startNode.updateMxData(startCell, null);
+        //validate the nodes
+        try {
+            startNode.validate();
+        } catch (Exception e) {
+            System.err.println("VALIDATION FAILED! - ABORTING RUN");
+            return false;
         }
-        firstNode.stopProcessing();
+        try {
+            //actual process
+            startNode.startProcessing();
+            startNode.processRow(null);
+            startNode.stopProcessing();
+        } catch (Exception e) {
+            System.out.println("Error running graph");
+            return false;
+        }
+        return true;
+//        
+//        firstNode.startProcessing();
+//        Object[] row;
+//        while ((row = firstNode.processRow()) != null) {
+        
+        
+    }
+    private boolean processGraph() {
+        updateGraph();
+        //First get input vertices:
+//        List<mxCell> inputVertices = new LinkedList<mxCell>();
+//        //get vertices:
+//        Object[] vertices = graph.getChildVertices(graph.getDefaultParent());
+//        for (int i = 0; i < vertices.length; i++) {
+//            mxCell cell = (mxCell)vertices[i];
+//            if (cell.getValue() instanceof InputNode) {
+//                System.out.println("found input node");
+//                inputVertices.add(cell);
+//            }
+//        }
+//        System.out.println("total input nodes found: "+inputVertices.size());
+//        //start the processing:
+//        mxCell first = inputVertices.get(0);
+//        InputNode firstNode = (InputNode)first.getValue();
+//        firstNode.startProcessing();
+//        Object[] row;
+//        while ((row = firstNode.processRow()) != null) {
+//            
+//        }
+//        firstNode.stopProcessing();
 
         return false;
     }

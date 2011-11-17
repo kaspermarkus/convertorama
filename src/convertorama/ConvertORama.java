@@ -7,7 +7,7 @@ import com.mxgraph.util.mxEventObject;
 import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxMultiplicity;
-import convertorama.InputNode;
+import convertorama.nodes.InputNode;
 import convertorama.Palette;
 import convertorama.nodes.CSVInputNode;
 import convertorama.nodes.ConsoleOutputNode;

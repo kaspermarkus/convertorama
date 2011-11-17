@@ -278,13 +278,17 @@ public class CSVInputDialog extends javax.swing.JDialog {
         boolean firstLineHeader = isFirstLineHeader();
         
         if (file != null) {
-            TableDescriptor tableDescriptor = CSVInputNode.getTableDescriptor(file, separator, firstLineHeader);
+            try {
+                TableDescriptor tableDescriptor = CSVInputNode.getTableDescriptor(file, separator, firstLineHeader);
             Table table = CSVInputNode.readTable(tableDescriptor, file, separator, firstLineHeader, 3);
             System.out.println(table.toString());
             previewPanel.removeAll();
             previewPanel.setLayout(new GridLayout(1,0));
             previewPanel.add(table.toGUI());
             previewPanel.updateUI();            
+            } catch (Exception e) {
+                System.err.println("ERROR: Something wrong with the fileformat. Wasn't able to load preview");
+            }
         } else {
             System.err.println("No file selected. Please select one using the 'browse' button, then click preview retry");
         }

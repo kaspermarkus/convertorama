@@ -113,6 +113,10 @@ public class TableDescriptor {
         sb.append("\n");
         return sb.toString();
     }
+    
+    public int getColumnIndex(Object obj) {
+        return columns.indexOf(obj);
+    }
 //    
 //    public boolean validateRow(List row) {
 //        return validateRow(row.toArray());
